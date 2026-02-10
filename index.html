@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TGD Consulting LLC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 50: '#f0f3f9', 100: '#d9e0ef', 900: '#0a1628', 950: '#060e1a' },
+                        gold: { 400: '#d4a853', 500: '#c9952e', 600: '#b07f1e' },
+                        slate: { 750: '#293548' }
+                    },
+                    fontFamily: {
+                        display: ['Cormorant Garamond', 'serif'],
+                        body: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Outfit', sans-serif; background: #060e1a; color: #d9e0ef; }
+
+        /* Gold gradient text */
+        .gold-text {
+            background: linear-gradient(135deg, #d4a853, #f0d48a, #c9952e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Subtle noise overlay */
+        .noise-overlay::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Animated gradient border */
+        .glow-border {
+            position: relative;
+        }
+        .glow-border::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #d4a853, #f0d48a, #c9952e);
+            transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .glow-border:hover::after { width: 100%; }
+
+        /* Fade-in animation */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Stagger children */
+        .stagger-children .fade-up:nth-child(1) { transition-delay: 0.05s; }
+        .stagger-children .fade-up:nth-child(2) { transition-delay: 0.15s; }
+        .stagger-children .fade-up:nth-child(3) { transition-delay: 0.25s; }
+        .stagger-children .fade-up:nth-child(4) { transition-delay: 0.35s; }
+        .stagger-children .fade-up:nth-child(5) { transition-delay: 0.45s; }
+        .stagger-children .fade-up:nth-child(6) { transition-delay: 0.55s; }
+
+        /* Service card hover */
+        .service-card {
+            background: linear-gradient(145deg, rgba(41,53,72,0.5), rgba(10,22,40,0.8));
+            border: 1px solid rgba(212,168,83,0.08);
+            transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .service-card:hover {
+            border-color: rgba(212,168,83,0.3);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 60px rgba(212,168,83,0.08), 0 0 0 1px rgba(212,168,83,0.1);
+        }
+
+        /* Diagonal divider */
+        .diagonal-divider {
+            clip-path: polygon(0 0, 100% 4%, 100% 100%, 0 96%);
+        }
+
+        /* Nav link */
+        .nav-link {
+            position: relative;
+            letter-spacing: 0.08em;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 1px;
+            background: #d4a853;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        .nav-link:hover::after { width: 100%; }
+
+        /* Hero geometric bg */
+        .hero-geo {
+            position: absolute;
+            border: 1px solid rgba(212,168,83,0.06);
+            border-radius: 2px;
+            animation: float 20s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(2deg); }
+            66% { transform: translateY(10px) rotate(-1deg); }
+        }
+
+        .stat-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700;
+            font-size: 3.5rem;
+            line-height: 1;
+        }
+
+        /* CTA button */
+        .cta-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #d4a853, #c9952e);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .cta-btn:hover::before { opacity: 1; }
+        .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(212,168,83,0.3); }
+        .cta-btn span { position: relative; z-index: 1; }
+
+        /* Mobile menu */
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .mobile-menu.open { transform: translateX(0); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #060e1a; }
+        ::-webkit-scrollbar-thumb { background: rgba(212,168,83,0.3); border-radius: 3px; }
+
+        /* Accordion */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .accordion-content.open { max-height: 500px; }
+        .accordion-icon { transition: transform 0.3s ease; }
+        .accordion-icon.rotated { transform: rotate(45deg); }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- ===================== NAVIGATION ===================== -->
+    <nav id="navbar" class="fixed top-0 w-full z-50 transition-all duration-500" style="background: transparent;">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <a href="#hero" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 border border-gold-400/40 flex items-center justify-center rotate-45 group-hover:border-gold-400 transition-colors duration-300">
+                        <span class="font-display text-gold-400 text-lg font-bold -rotate-45">T</span>
+                    </div>
+                    <div class="leading-tight">
+                        <span class="font-display text-xl font-semibold tracking-wide text-white">TGD</span>
+                        <span class="block text-[10px] tracking-[0.3em] uppercase text-gold-400/70 font-body">Consulting LLC</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Nav -->
+                <div class="hidden lg:flex items-center gap-10">
+                    <a href="#services" class="nav-link text-xs uppercase font-medium text-navy-100/80 hover:text-gold-400 transition-colors">Services</a>
+                    <a href="#about" class="nav-link text-xs uppercase font-medium text-navy-100/80 hover:text-gold-400 transition-colors">About</a>
+                    <a href="#industries" class="nav-link text-xs uppercase font-medium text-navy-100/80 hover:text-gold-400 transition-colors">Industries</a>
+                    <a href="#process" class="nav-link text-xs uppercase font-medium text-navy-100/80 hover:text-gold-400 transition-colors">Process</a>
+                    <a href="#faq" class="nav-link text-xs uppercase font-medium text-navy-100/80 hover:text-gold-400 transition-colors">FAQ</a>
+                    <a href="#contact" class="cta-btn border border-gold-400/50 px-6 py-2.5 text-xs uppercase tracking-widest font-medium text-gold-400">
+                        <span>Get Started</span>
+                    </a>
+                </div>
+
+                <!-- Mobile Toggle -->
+                <button id="menuToggle" class="lg:hidden flex flex-col gap-1.5 p-2" aria-label="Toggle menu">
+                    <span class="block w-6 h-px bg-gold-400 transition-all duration-300" id="bar1"></span>
+                    <span class="block w-4 h-px bg-gold-400 ml-auto transition-all duration-300" id="bar2"></span>
+                    <span class="block w-6 h-px bg-gold-400 transition-all duration-300" id="bar3"></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed inset-y-0 right-0 w-72 bg-navy-950/98 backdrop-blur-xl z-50 border-l border-gold-400/10 flex flex-col justify-center px-10">
+        <button id="menuClose" class="absolute top-7 right-6 text-gold-400 text-2xl">&times;</button>
+        <div class="flex flex-col gap-8">
+            <a href="#services" class="mobile-link text-lg font-display text-navy-100/80 hover:text-gold-400 transition-colors">Services</a>
+            <a href="#about" class="mobile-link text-lg font-display text-navy-100/80 hover:text-gold-400 transition-colors">About</a>
+            <a href="#industries" class="mobile-link text-lg font-display text-navy-100/80 hover:text-gold-400 transition-colors">Industries</a>
+            <a href="#process" class="mobile-link text-lg font-display text-navy-100/80 hover:text-gold-400 transition-colors">Process</a>
+            <a href="#faq" class="mobile-link text-lg font-display text-navy-100/80 hover:text-gold-400 transition-colors">FAQ</a>
+            <a href="#contact" class="cta-btn border border-gold-400/50 px-6 py-3 text-xs uppercase tracking-widest font-medium text-gold-400 text-center mt-4">
+                <span>Get Started</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- ===================== HERO ===================== -->
+    <section id="hero" class="relative min-h-screen flex items-center overflow-hidden noise-overlay">
+        <!-- Background geometry -->
+        <div class="hero-geo w-64 h-64 top-20 right-[15%]" style="animation-delay:-5s;"></div>
+        <div class="hero-geo w-96 h-96 bottom-10 left-[5%]" style="animation-delay:-10s;"></div>
+        <div class="hero-geo w-40 h-40 top-[40%] right-[5%]" style="animation-delay:-15s;"></div>
+
+        <!-- Radial glow -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gold-400/[0.02] rounded-full blur-3xl"></div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-20 w-full">
+            <div class="max-w-4xl">
+                <div class="fade-up mb-6">
+                    <span class="inline-block text-[11px] uppercase tracking-[0.4em] text-gold-400/70 font-medium border border-gold-400/20 px-4 py-2">Business &amp; Legal Consulting</span>
+                </div>
+                <h1 class="fade-up font-display text-5xl sm:text-6xl lg:text-8xl font-bold leading-[0.95] tracking-tight text-white mb-8">
+                    Strategic Vision.<br>
+                    <span class="gold-text">Measurable Impact.</span>
+                </h1>
+                <p class="fade-up font-body text-lg sm:text-xl text-navy-100/60 max-w-2xl leading-relaxed mb-12 font-light">
+                    TGD Consulting LLC partners with organizations to navigate complex business challenges—from contract review and legal strategy to education technology and enterprise growth. We turn ambiguity into actionable strategy.
+                </p>
+                <div class="fade-up flex flex-wrap gap-4">
+                    <a href="#contact" class="cta-btn bg-gold-400/10 border border-gold-400/50 px-8 py-4 text-sm uppercase tracking-widest font-medium text-gold-400">
+                        <span>Schedule a Consultation</span>
+                    </a>
+                    <a href="#services" class="group flex items-center gap-3 px-6 py-4 text-sm text-navy-100/50 hover:text-gold-400 transition-colors">
+                        Explore Services
+                        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats strip -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 mt-24 pt-12 border-t border-white/5">
+                <div class="fade-up">
+                    <div class="stat-number gold-text" data-target="150" data-suffix="+">0</div>
+                    <p class="text-xs uppercase tracking-widest text-navy-100/40 mt-2">Clients Served</p>
+                </div>
+                <div class="fade-up">
+                    <div class="stat-number gold-text" data-target="12" data-suffix="">0</div>
+                    <p class="text-xs uppercase tracking-widest text-navy-100/40 mt-2">Years of Experience</p>
+                </div>
+                <div class="fade-up">
+                    <div class="stat-number gold-text" data-target="98" data-suffix="%">0</div>
+                    <p class="text-xs uppercase tracking-widest text-navy-100/40 mt-2">Client Retention</p>
+                </div>
+                <div class="fade-up">
+                    <div class="stat-number gold-text" data-target="40" data-suffix="M+">0</div>
+                    <p class="text-xs uppercase tracking-widest text-navy-100/40 mt-2">Revenue Generated</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== SERVICES ===================== -->
+    <section id="services" class="relative py-32 noise-overlay">
+        <div class="absolute inset-0 bg-gradient-to-b from-navy-950 via-navy-900/50 to-navy-950"></div>
+        <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <span class="fade-up inline-block text-[11px] uppercase tracking-[0.4em] text-gold-400/70 font-medium mb-4">What We Do</span>
+                <h2 class="fade-up font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white">Our Core Services</h2>
+                <div class="fade-up w-16 h-px bg-gold-400/40 mx-auto mt-6"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
+                <!-- Service 1 -->
+                <div class="service-card fade-up rounded-sm p-8 lg:p-10">
+                    <div class="w-12 h-12 border border-gold-400/30 flex items-center justify-center mb-6">
+                        <svg class="w-5 h-5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </div>
+                    <h3 class="font-display text-2xl font-semibold text-white mb-4">Contract Review &amp; Negotiation</h3>
+                    <p class="text-navy-100/50 leading-relaxed text-sm font-light">
+                        Comprehensive analysis of business contracts, vendor agreements, partnership terms, and NDAs. We identify hidden risks, negotiate favorable terms, and ensure every clause protects your interests. Our team reviews employment contracts, SaaS agreements, licensing deals, and procurement terms with meticulous attention to detail.
+                    </p>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="service-card fade-up rounded-sm p-8 lg:p-10">
+                    <div class="w-12 h-12 border border-gold-400/30 flex items-center justify-center mb-6">
+                        <svg class="w-5 h-5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <h3 class="font-display text-2xl font-semibold text-white mb-4">Business Development</h3>
+                    <p class="text-navy-100/50 leading-relaxed text-sm font-light">
+                        Accelerate growth with data-driven market entry strategies, partnership identification, and revenue optimization. We build scalable pipelines, refine go-to-market playbooks, and establish strategic alliances that unlock new revenue streams. From startup scaling to enterprise expansion, we engineer sustainable growth.
+                    </p>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="service-card fade-up rounded-sm p-8 lg:p-10">
+                    <div class="w-12 h-12 border border-gold-400/30 flex items-center justify-center mb-6">
+                        <svg class="w-5 h-5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+                    </div>
+                    <h3 class="font-display text-2xl font-semibold text-white mb-4">Legal Strategy &amp; Compliance</h3>
+                    <p class="text-navy-100/50 leading-relaxed text-sm font-light">
+                        Navigate regulatory landscapes with confidence. We provide compliance auditing, risk assessment, intellectual property strategy, and corporate governance advisory. Our consultants help organizations meet federal, state, and industry-specific regulatory requirements while minimizing operational exposure and liability.
+                    </p>
+                </div>
+
+                <!-- Service 4 -->
+                <div class="service-card fade-up rounded-sm p-8 lg:p-10">
+                    <div class="w-12 h-12 border border-gold-400/30 flex items-center justify-center mb-6">
+                        <svg class="w-5 h-5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    </div>
+                    <h3 class="font-display text-2xl font-semibold text-white mb-4">Education Technology</h3>
+                    <p class="text-navy-100/50 leading-relaxed text-sm font-light">
+                        Transform learning ecosystems with strategic EdTech consulting. We advise on LMS platform selection, curriculum digitization, AI-driven adaptive learning integration, and digital accessibility compliance. From K-12 districts to higher education institutions and corporate L&D programs, we bridge the gap between pedagogy and technology.
+                    </p>
+                </div>
+
+                <!-- Service 5 -->
+                <div class="service-card fade-up rounded-sm p-8 lg:p-10">
+                    <div class="w-12 h-12 border border-gold-400/30 flex items-center justify-center mb-6">
+                        <svg class="w-5 h-5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    </div>
+                    <h3 class="font-display text-2xl font-semibold text-white mb-4">Strategic Planning</h3>
+                    <p class="text-navy-100/50 leading-relaxed text-sm font-light">
+                        Craft multi-year roadmaps that align vision with execution. We facilitate executive offsites, build OKR frameworks, conduct competitive intelligence analyses, and develop contingency plans. Our strategic planning engagements produce actionable blueprints—complete with KPIs, milestones, and accountability structures—that keep organizations focused and agile.
+                    </p>
+                </div>
+
+                <!-- Service 6 -->
+                <div class="service-card fade-up rounded-sm p-8 lg:p-10">
+                    <div class="w-12 h-12 border border-gold-400/30 flex items-center justify-center mb-6">
+                        <svg class="w-5 h-5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </div>
+                    <h3 class="font-display text-2xl font-semibold text-white mb-4">Organizational Development</h3>
+                    <p class="text-navy-100/50 leading-relaxed text-sm font-light">
+                        Build high-performance teams and resilient organizational cultures. We design leadership development programs, change management frameworks, DEI strategies, and talent retention systems. Our approach blends behavioral science with practical implementation to create workplaces where people and performance thrive together.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== ABOUT / WHY US ===================== -->
+    <section id="about" class="relative py-32 overflow-hidden">
+        <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-gold-400/[0.02] to-transparent"></div>
+        <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+                <div>
+                    <span class="fade-up inline-block text-[11px] uppercase tracking-[0.4em] text-gold-400/70 font-medium mb-4">Why TGD Consulting</span>
+                    <h2 class="fade-up font-display text-4xl sm:text-5xl font-bold text-white mb-8 leading-tight">
+                        Where Business Acumen Meets <span class="gold-text">Legal Precision</span>
+                    </h2>
+                    <p class="fade-up text-navy-100/50 leading-relaxed mb-6 font-light">
+                        Founded on the principle that great businesses deserve more than one-dimensional advice, TGD Consulting LLC sits at the intersection of legal rigor and business creativity. Our multidisciplinary team combines decades of experience across corporate law, venture strategy, education technology, and operational excellence.
+                    </p>
+                    <p class="fade-up text-navy-100/50 leading-relaxed mb-10 font-light">
+                        We don't believe in cookie-cutter solutions. Every engagement begins with deep discovery—understanding your market position, organizational dynamics, risk profile, and ambitions. From there, we architect bespoke strategies that are as pragmatic as they are bold, designed to deliver measurable ROI and lasting competitive advantage.
+                    </p>
+                    <div class="fade-up flex flex-wrap gap-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-2 bg-gold-400 rounded-full"></div>
+                            <span class="text-sm text-navy-100/60">Cross-Disciplinary Expertise</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-2 bg-gold-400 rounded-full"></div>
+                            <span class="text-sm text-navy-100/60">Data-Driven Methodology</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-2 bg-gold-400 rounded-full"></div>
+                            <span class="text-sm text-navy-100/60">Confidential &amp; Trusted</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual block -->
+                <div class="fade-up relative">
+                    <div class="relative bg-gradient-to-br from-navy-900 to-navy-950 border border-gold-400/10 p-10 rounded-sm">
+                        <div class="absolute -top-3 -left-3 w-6 h-6 border-t border-l border-gold-400/40"></div>
+                        <div class="absolute -bottom-3 -right-3 w-6 h-6 border-b border-r border-gold-400/40"></div>
+                        <blockquote class="font-display text-2xl sm:text-3xl text-white/90 leading-snug italic mb-6">
+                            "TGD transformed how we approach both our legal framework and growth strategy. They didn't just advise—they partnered."
+                        </blockquote>
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-gold-400/20 flex items-center justify-center">
+                                <span class="font-display text-gold-400 font-semibold text-sm">MR</span>
+                            </div>
+                            <div>
+                                <p class="text-white text-sm font-medium">Michael Reynolds</p>
+                                <p class="text-navy-100/40 text-xs">CEO, Apex Innovations</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== INDUSTRIES ===================== -->
+    <section id="industries" class="relative py-32 noise-overlay diagonal-divider" style="background: linear-gradient(160deg, #0d1b2e 0%, #0a1628 100%);">
+        <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <span class="fade-up inline-block text-[11px] uppercase tracking-[0.4em] text-gold-400/70 font-medium mb-4">Sector Expertise</span>
+                <h2 class="fade-up font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white">Industries We Serve</h2>
+                <div class="fade-up w-16 h-px bg-gold-400/40 mx-auto mt-6"></div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 stagger-children">
+                <div class="fade-up group p-8 border border-white/5 hover:border-gold-400/20 rounded-sm transition-all duration-500 hover:bg-gold-400/[0.03]">
+                    <div class="text-3xl mb-4">🎓</div>
+                    <h3 class="font-display text-xl font-semibold text-white mb-3">Education &amp; EdTech</h3>
+                    <p class="text-navy-100/40 text-sm font-light leading-relaxed">K-12 systems, universities, online learning platforms, LMS providers, and workforce training organizations navigating digital transformation and compliance.</p>
+                </div>
+                <div class="fade-up group p-8 border border-white/5 hover:border-gold-400/20 rounded-sm transition-all duration-500 hover:bg-gold-400/[0.03]">
+                    <div class="text-3xl mb-4">💻</div>
+                    <h3 class="font-display text-xl font-semibold text-white mb-3">Technology &amp; SaaS</h3>
+                    <p class="text-navy-100/40 text-sm font-light leading-relaxed">Startups and scale-ups across AI, cloud infrastructure, cybersecurity, and fintech—from seed-stage strategy to Series C scaling and enterprise partnerships.</p>
+                </div>
+                <div class="fade-up group p-8 border border-white/5 hover:border-gold-400/20 rounded-sm transition-all duration-500 hover:bg-gold-400/[0.03]">
+                    <div class="text-3xl mb-4">🏥</div>
+                    <h3 class="font-display text-xl font-semibold text-white mb-3">Healthcare &amp; Life Sciences</h3>
+                    <p class="text-navy-100/40 text-sm font-light leading-relaxed">Health systems, biotech firms, telehealth providers, and medical device companies requiring regulatory navigation, partnership strategy, and contract structuring.</p>
+                </div>
+                <div class="fade-up group p-8 border border-white/5 hover:border-gold-400/20 rounded-sm transition-all duration-500 hover:bg-gold-400/[0.03]">
+                    <div class="text-3xl mb-4">🏛️</div>
+                    <h3 class="font-display text-xl font-semibold text-white mb-3">Government &amp; Nonprofits</h3>
+                    <p class="text-navy-100/40 text-sm font-light leading-relaxed">Public sector agencies, NGOs, and foundations seeking strategic planning, grant compliance, procurement process improvement, and organizational restructuring.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== PROCESS ===================== -->
+    <section id="process" class="relative py-32">
+        <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <span class="fade-up inline-block text-[11px] uppercase tracking-[0.4em] text-gold-400/70 font-medium mb-4">How We Work</span>
+                <h2 class="fade-up font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white">Our Engagement Process</h2>
+                <div class="fade-up w-16 h-px bg-gold-400/40 mx-auto mt-6"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 stagger-children">
+                <div class="fade-up relative">
+                    <div class="text-6xl font-display font-bold text-gold-400/10 mb-4">01</div>
+                    <h3 class="font-display text-xl font-semibold text-white mb-3">Discovery &amp; Diagnosis</h3>
+                    <p class="text-navy-100/40 text-sm font-light leading-relaxed">
+                        We begin every engagement with an intensive discovery phase—stakeholder interviews, document analysis, market assessment, and organizational audit to understand the full picture before we advise.
+                    </p>
+                    <div class="hidden lg:block absolute top-10 -right-4 w-8 h-px bg-gold-400/20"></div>
+                </div>
+                <div class="fade-up relative">
+                    <div class="text-6xl font-display font-bold text-gold-400/10 mb-4">02</div>
+                    <h3 class="font-display text-xl font-semibold text-white mb-3">Strategy Architecture</h3>
+                    <p class="text-navy-100/40 text-sm font-light leading-relaxed">
+                        Using our findings, we architect a comprehensive strategy with clear priorities, risk mitigation plans, resource allocation recommendations, and measurable success criteria tailored to your objectives.
+                    </p>
+                    <div class="hidden lg:block absolute top-10 -right-4 w-8 h-px bg-gold-400/20"></div>
+                </div>
+                <div class="fade-up relative">
+                    <div class="text-6xl font-display font-bold text-gold-400/10 mb-4">03</div>
+                    <h3 class="font-display text-xl font-semibold text-white mb-3">Execution Support</h3>
+                    <p class="text-navy-100/40 text-sm font-light leading-relaxed">
+                        Strategy without execution is wishful thinking. We provide hands-on implementation support—negotiating contracts, managing vendor selection, facilitating organizational change, and embedding best practices.
+                    </p>
+                    <div class="hidden lg:block absolute top-10 -right-4 w-8 h-px bg-gold-400/20"></div>
+                </div>
+                <div class="fade-up">
+                    <div class="text-6xl font-display font-bold text-gold-400/10 mb-4">04</div>
+                    <h3 class="font-display text-xl font-semibold text-white mb-3">Measure &amp; Optimize</h3>
+                    <p class="text-navy-100/40 text-sm font-light leading-relaxed">
+                        We establish feedback loops with quarterly performance reviews, KPI tracking dashboards, and continuous improvement recommendations so your results compound over time and adapt to market shifts.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== FAQ ===================== -->
+    <section id="faq" class="relative py-32 noise-overlay" style="background: linear-gradient(160deg, #0d1b2e 0%, #0a1628 100%);">
+        <div class="relative z-10 max-w-3xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="fade-up inline-block text-[11px] uppercase tracking-[0.4em] text-gold-400/70 font-medium mb-4">Common Questions</span>
+                <h2 class="fade-up font-display text-4xl sm:text-5xl font-bold text-white">Frequently Asked</h2>
+                <div class="fade-up w-16 h-px bg-gold-400/40 mx-auto mt-6"></div>
+            </div>
+
+            <div class="space-y-4 stagger-children">
+                <div class="fade-up border border-white/5 rounded-sm">
+                    <button class="accordion-trigger w-full flex items-center justify-between p-6 text-left" onclick="toggleAccordion(this)">
+                        <span class="font-display text-lg text-white pr-4">What types of contracts does TGD review?</span>
+                        <span class="accordion-icon text-gold-400 text-xl flex-shrink-0">+</span>
+                    </button>
+                    <div class="accordion-content px-6">
+                        <p class="text-navy-100/50 text-sm font-light leading-relaxed pb-6">
+                            We review a wide range of business contracts including vendor and supplier agreements, employment contracts, partnership and joint venture agreements, SaaS and licensing contracts, NDAs, mergers and acquisitions documentation, lease agreements, and government procurement contracts. Our team identifies unfavorable terms, liability exposure, and negotiation leverage points.
+                        </p>
+                    </div>
+                </div>
+                <div class="fade-up border border-white/5 rounded-sm">
+                    <button class="accordion-trigger w-full flex items-center justify-between p-6 text-left" onclick="toggleAccordion(this)">
+                        <span class="font-display text-lg text-white pr-4">How does the EdTech consulting work?</span>
+                        <span class="accordion-icon text-gold-400 text-xl flex-shrink-0">+</span>
+                    </button>
+                    <div class="accordion-content px-6">
+                        <p class="text-navy-100/50 text-sm font-light leading-relaxed pb-6">
+                            Our education technology consulting starts with a needs assessment of your current learning infrastructure, technology stack, and pedagogical goals. We then provide recommendations on platform selection (LMS, SIS, assessment tools), integration architecture, accessibility and FERPA/COPPA compliance, AI-driven personalization strategies, and change management plans to ensure successful adoption across your organization.
+                        </p>
+                    </div>
+                </div>
+                <div class="fade-up border border-white/5 rounded-sm">
+                    <button class="accordion-trigger w-full flex items-center justify-between p-6 text-left" onclick="toggleAccordion(this)">
+                        <span class="font-display text-lg text-white pr-4">What is the typical engagement timeline?</span>
+                        <span class="accordion-icon text-gold-400 text-xl flex-shrink-0">+</span>
+                    </button>
+                    <div class="accordion-content px-6">
+                        <p class="text-navy-100/50 text-sm font-light leading-relaxed pb-6">
+                            Timelines vary based on scope. A focused contract review may take 1–2 weeks, while a comprehensive strategic planning engagement typically spans 8–12 weeks. Long-term advisory retainers are structured as quarterly cycles with monthly touchpoints. We provide a detailed project timeline and milestone schedule during our proposal phase so you know exactly what to expect.
+                        </p>
+                    </div>
+                </div>
+                <div class="fade-up border border-white/5 rounded-sm">
+                    <button class="accordion-trigger w-full flex items-center justify-between p-6 text-left" onclick="toggleAccordion(this)">
+                        <span class="font-display text-lg text-white pr-4">Do you work with startups or only established companies?</span>
+                        <span class="accordion-icon text-gold-400 text-xl flex-shrink-0">+</span>
+                    </button>
+                    <div class="accordion-content px-6">
+                        <p class="text-navy-100/50 text-sm font-light leading-relaxed pb-6">
+                            We work across the full spectrum—from pre-revenue startups seeking foundational legal and business frameworks to Fortune 500 enterprises navigating complex transformations. Our engagement models are flexible: startups benefit from our accelerator-style packages with milestone-based pricing, while larger organizations typically engage through retainer or project-based structures.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== CONTACT / CTA ===================== -->
+    <section id="contact" class="relative py-32 overflow-hidden">
+        <div class="absolute inset-0">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold-400/[0.03] rounded-full blur-[120px]"></div>
+        </div>
+        <div class="relative z-10 max-w-4xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="fade-up inline-block text-[11px] uppercase tracking-[0.4em] text-gold-400/70 font-medium mb-4">Start the Conversation</span>
+                <h2 class="fade-up font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+                    Ready to Elevate<br>Your Business?
+                </h2>
+                <p class="fade-up text-navy-100/50 max-w-xl mx-auto leading-relaxed font-light">
+                    Whether you need a single contract reviewed or a full strategic overhaul, our team is ready to deliver. Schedule a confidential, no-obligation consultation today.
+                </p>
+            </div>
+
+            <form id="contactForm" class="fade-up max-w-2xl mx-auto space-y-6" onsubmit="handleSubmit(event)">
+                <div class="grid sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-widest text-navy-100/40 mb-2">Full Name</label>
+                        <input type="text" required class="w-full bg-transparent border border-white/10 focus:border-gold-400/50 px-4 py-3 text-white text-sm outline-none transition-colors rounded-sm placeholder:text-navy-100/20" placeholder="Jane Doe">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-widest text-navy-100/40 mb-2">Email</label>
+                        <input type="email" required class="w-full bg-transparent border border-white/10 focus:border-gold-400/50 px-4 py-3 text-white text-sm outline-none transition-colors rounded-sm placeholder:text-navy-100/20" placeholder="jane@company.com">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] uppercase tracking-widest text-navy-100/40 mb-2">Company</label>
+                    <input type="text" class="w-full bg-transparent border border-white/10 focus:border-gold-400/50 px-4 py-3 text-white text-sm outline-none transition-colors rounded-sm placeholder:text-navy-100/20" placeholder="Acme Inc.">
+                </div>
+                <div>
+                    <label class="block text-[11px] uppercase tracking-widest text-navy-100/40 mb-2">Service of Interest</label>
+                    <select required class="w-full bg-navy-950 border border-white/10 focus:border-gold-400/50 px-4 py-3 text-white text-sm outline-none transition-colors rounded-sm">
+                        <option value="" class="bg-navy-950">Select a service...</option>
+                        <option value="contract" class="bg-navy-950">Contract Review &amp; Negotiation</option>
+                        <option value="bizdev" class="bg-navy-950">Business Development</option>
+                        <option value="legal" class="bg-navy-950">Legal Strategy &amp; Compliance</option>
+                        <option value="edtech" class="bg-navy-950">Education Technology</option>
+                        <option value="strategic" class="bg-navy-950">Strategic Planning</option>
+                        <option value="orgdev" class="bg-navy-950">Organizational Development</option>
+                        <option value="other" class="bg-navy-950">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] uppercase tracking-widest text-navy-100/40 mb-2">Message</label>
+                    <textarea rows="5" required class="w-full bg-transparent border border-white/10 focus:border-gold-400/50 px-4 py-3 text-white text-sm outline-none transition-colors rounded-sm placeholder:text-navy-100/20 resize-none" placeholder="Tell us about your needs..."></textarea>
+                </div>
+                <button type="submit" class="cta-btn w-full border border-gold-400/50 bg-gold-400/10 px-8 py-4 text-sm uppercase tracking-widest font-medium text-gold-400 rounded-sm">
+                    <span>Send Inquiry</span>
+                </button>
+                <div id="formSuccess" class="hidden text-center text-gold-400 text-sm py-4">
+                    ✓ Thank you for your inquiry. Our team will be in touch within 24 hours.
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="border-t border-white/5 py-16">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-8 h-8 border border-gold-400/40 flex items-center justify-center rotate-45">
+                            <span class="font-display text-gold-400 text-sm font-bold -rotate-45">T</span>
+                        </div>
+                        <span class="font-display text-lg font-semibold text-white">TGD Consulting</span>
+                    </div>
+                    <p class="text-navy-100/40 text-sm font-light leading-relaxed">
+                        Empowering organizations with integrated business and legal consulting to achieve sustainable growth and resilient operations.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-[11px] uppercase tracking-widest text-gold-400/70 font-medium mb-6">Services</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#services" class="text-sm text-navy-100/40 hover:text-gold-400 transition-colors font-light">Contract Review</a></li>
+                        <li><a href="#services" class="text-sm text-navy-100/40 hover:text-gold-400 transition-colors font-light">Business Development</a></li>
+                        <li><a href="#services" class="text-sm text-navy-100/40 hover:text-gold-400 transition-colors font-light">Legal Strategy</a></li>
+                        <li><a href="#services" class="text-sm text-navy-100/40 hover:text-gold-400 transition-colors font-light">Education Technology</a></li>
+                        <li><a href="#services" class="text-sm text-navy-100/40 hover:text-gold-400 transition-colors font-light">Strategic Planning</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-[11px] uppercase tracking-widest text-gold-400/70 font-medium mb-6">Company</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#about" class="text-sm text-navy-100/40 hover:text-gold-400 transition-colors font-light">About Us</a></li>
+                        <li><a href="#process" class="text-sm text-navy-100/40 hover:text-gold-400 transition-colors font-light">Our Process</a></li>
+                        <li><a href="#industries" class="text-sm text-navy-100/40 hover:text-gold-400 transition-colors font-light">Industries</a></li>
+                        <li><a href="#faq" class="text-sm text-navy-100/40 hover:text-gold-400 transition-colors font-light">FAQ</a></li>
+                        <li><a href="#contact" class="text-sm text-navy-100/40 hover:text-gold-400 transition-colors font-light">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-[11px] uppercase tracking-widest text-gold-400/70 font-medium mb-6">Contact</h4>
+                    <ul class="space-y-3">
+                        <li class="text-sm text-navy-100/40 font-light">info@tgdconsulting.com</li>
+                        <li class="text-sm text-navy-100/40 font-light">(555) 812-4900</li>
+                        <li class="text-sm text-navy-100/40 font-light leading-relaxed">1200 Strategy Blvd, Suite 400<br>Washington, D.C. 20001</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/5">
+                <p class="text-xs text-navy-100/30 font-light">&copy; 2026 TGD Consulting LLC. All rights reserved.</p>
+                <div class="flex gap-6">
+                    <a href="#" class="text-xs text-navy-100/30 hover:text-gold-400 transition-colors font-light">Privacy Policy</a>
+                    <a href="#" class="text-xs text-navy-100/30 hover:text-gold-400 transition-colors font-light">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===================== JAVASCRIPT ===================== -->
+    <script>
+        // ---- Scroll Animations (Intersection Observer) ----
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+        // ---- Navbar Background on Scroll ----
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 60) {
+                navbar.style.background = 'rgba(6,14,26,0.92)';
+                navbar.style.backdropFilter = 'blur(16px)';
+                navbar.style.borderBottom = '1px solid rgba(212,168,83,0.08)';
+            } else {
+                navbar.style.background = 'transparent';
+                navbar.style.backdropFilter = 'none';
+                navbar.style.borderBottom = 'none';
+            }
+        });
+
+        // ---- Mobile Menu ----
+        const menuToggle = document.getElementById('menuToggle');
+        const menuClose = document.getElementById('menuClose');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        menuToggle.addEventListener('click', () => mobileMenu.classList.add('open'));
+        menuClose.addEventListener('click', () => mobileMenu.classList.remove('open'));
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => mobileMenu.classList.remove('open'));
+        });
+
+        // ---- Counter Animation ----
+        const counters = document.querySelectorAll('[data-target]');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    let current = 0;
+                    const step = Math.max(1, Math.floor(target / 60));
+                    const timer = setInterval(() => {
+                        current += step;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        el.textContent = current + suffix;
+                    }, 25);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        counters.forEach(c => counterObserver.observe(c));
+
+        // ---- FAQ Accordion ----
+        function toggleAccordion(btn) {
+            const content = btn.nextElementSibling;
+            const icon = btn.querySelector('.accordion-icon');
+            const isOpen = content.classList.contains('open');
+
+            // Close all
+            document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('open'));
+            document.querySelectorAll('.accordion-icon').forEach(i => i.classList.remove('rotated'));
+
+            if (!isOpen) {
+                content.classList.add('open');
+                icon.classList.add('rotated');
+            }
+        }
+
+        // ---- Contact Form ----
+        function handleSubmit(e) {
+            e.preventDefault();
+            const form = document.getElementById('contactForm');
+            const success = document.getElementById('formSuccess');
+            form.querySelectorAll('input, textarea, select').forEach(el => el.value = '');
+            success.classList.remove('hidden');
+            setTimeout(() => success.classList.add('hidden'), 5000);
+        }
+
+        // ---- Smooth scroll for anchors ----
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
